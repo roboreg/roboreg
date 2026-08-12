@@ -152,14 +152,9 @@ class URDFParser:
             List[str]: List of link names with meshes.
         """
         links = [link.name for link in self._robot.links]
-        for link in links:
-            if collision:
-                if not self._robot.link_map[link].collision:
-                    links.remove(link)
-            else:
-                if not self._robot.link_map[link].visual:
-                    links.remove(link)
-        return links
+        if collision:
+            return [link for link in links if self._robot.link_map[link].collision]
+        return [link for link in links if self._robot.link_map[link].visual]
 
     def mesh_uris(
         self, root_link_name: str, end_link_name: str, collision: bool = False
