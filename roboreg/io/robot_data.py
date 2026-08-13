@@ -56,39 +56,6 @@ def _build_robot_data(
     )
 
 
-def _load_robot_data_from_urdf_parser(
-    urdf_parser: URDFParser,
-    base_path: Path,
-    root_link_name: str,
-    end_link_name: str,
-    collision: bool,
-    target_reduction: float,
-) -> RobotData:
-    root_link_name, end_link_name = _resolve_link_names(
-        urdf_parser=urdf_parser,
-        root_link_name=root_link_name,
-        end_link_name=end_link_name,
-        collision=collision,
-    )
-
-    # parse data from URDF
-    mesh_uris = urdf_parser.mesh_uris(
-        root_link_name=root_link_name,
-        end_link_name=end_link_name,
-        collision=collision,
-    )
-    mesh_paths = urdf_parser.resolve_relative_uris(uris=mesh_uris, base_path=base_path)
-
-    return _build_robot_data(
-        urdf_parser=urdf_parser,
-        mesh_paths=mesh_paths,
-        root_link_name=root_link_name,
-        end_link_name=end_link_name,
-        collision=collision,
-        target_reduction=target_reduction,
-    )
-
-
 def load_robot_data_from_ros_xacro(
     ros_package: str,
     xacro_path: Union[Path, str],
@@ -163,9 +130,26 @@ def load_robot_data_from_urdf_file(
     #  create a URDF parser
     urdf_parser = URDFParser.from_urdf_file(path=urdf_path)
 
-    return _load_robot_data_from_urdf_parser(
+    root_link_name, end_link_name = _resolve_link_names(
         urdf_parser=urdf_parser,
-        base_path=urdf_path.parent,
+        root_link_name=root_link_name,
+        end_link_name=end_link_name,
+        collision=collision,
+    )
+
+    # parse data from URDF
+    mesh_uris = urdf_parser.mesh_uris(
+        root_link_name=root_link_name,
+        end_link_name=end_link_name,
+        collision=collision,
+    )
+    mesh_paths = urdf_parser.resolve_relative_uris(
+        uris=mesh_uris, base_path=urdf_path.parent
+    )
+
+    return _build_robot_data(
+        urdf_parser=urdf_parser,
+        mesh_paths=mesh_paths,
         root_link_name=root_link_name,
         end_link_name=end_link_name,
         collision=collision,
@@ -175,17 +159,15 @@ def load_robot_data_from_urdf_file(
 
 def load_robot_data_from_urdf_string(
     urdf: str,
-    base_path: Union[Path, str],
     root_link_name: str = "",
     end_link_name: str = "",
     collision: bool = False,
     target_reduction: float = 0.0,
 ) -> RobotData:
-    r"""Load data to construct a robot from a URDF string.
+    r"""Load data to construct a robot from a URDF string. Mesh paths in the URDF must be absolute.
 
     Args:
         urdf (str): The URDF contents.
-        base_path (Union[Path, str]): Base path meshes are resolved relative to.
         root_link_name (str): The root link name of the robot Defaults to the first link with a mesh.
         end_link_name (str): The end link name of the robot Defaults to the last link with a mesh.
         collision (bool): Whether to load collision meshes. Defaults to False.
@@ -196,9 +178,31 @@ def load_robot_data_from_urdf_string(
     """
     urdf_parser = URDFParser(urdf=urdf)
 
-    return _load_robot_data_from_urdf_parser(
+    root_link_name, end_link_name = _resolve_link_names(
         urdf_parser=urdf_parser,
-        base_path=Path(base_path),
+        root_link_name=root_link_name,
+        end_link_name=end_link_name,
+        collision=collision,
+    )
+
+    # parse data from URDF, expecting absolute mesh paths
+    mesh_uris = urdf_parser.mesh_uris(
+        root_link_name=root_link_name,
+        end_link_name=end_link_name,
+        collision=collision,
+    )
+    mesh_paths = {}
+    for link_name, uri in mesh_uris.items():
+        mesh_path = Path(uri)
+        if not mesh_path.is_absolute():
+            raise ValueError(
+                f"Expected an absolute mesh path for link '{link_name}', got '{uri}'."
+            )
+        mesh_paths[link_name] = mesh_path
+
+    return _build_robot_data(
+        urdf_parser=urdf_parser,
+        mesh_paths=mesh_paths,
         root_link_name=root_link_name,
         end_link_name=end_link_name,
         collision=collision,
