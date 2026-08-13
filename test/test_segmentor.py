@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import torch
 
-from roboreg.detector import OpenCVDetector
+from roboreg.annotator import OpenCVAnnotator, annotations_to_arrays
 from roboreg.segmentor import Sam2Segmentor
 
 
@@ -12,14 +12,15 @@ def test_sam2_segmentor() -> None:
     img = cv2.imread("test/assets/lbr_med7_r800/samples/left_image_1.png")
 
     # detect
-    detector = OpenCVDetector(n_positive_samples=5)  # number of detected samples
-    samples, labels = detector.detect(img)
+    annotator = OpenCVAnnotator(n_positive=5)
+    annotations = annotator.annotate(img)
+    points, labels = annotations_to_arrays(annotations)
 
     # segment
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     segmentor = Sam2Segmentor(device=device)
-    p = segmentor(img, np.array(samples), np.array(labels))
+    p = segmentor(img, points, labels)
 
     # visualize
     cv2.imshow(

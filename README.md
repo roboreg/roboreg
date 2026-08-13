@@ -116,8 +116,8 @@ This is a required step to generate robot masks.
 rr-sam2 \
     --path test/assets/lbr_med7_r800/samples \
     --pattern "left_image_*.png" \
-    --n-positive-samples 5 \
-    --n-negative-samples 5 \
+    --n-positive-annotations 5 \
+    --n-negative-annotations 5 \
     --device cuda
 ```
 
