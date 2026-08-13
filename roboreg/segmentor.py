@@ -6,17 +6,10 @@ from sam2.sam2_image_predictor import SAM2ImagePredictor
 
 
 class Segmentor(object):
-    __slots__ = ["_model", "_pth", "_device"]
+    __slots__ = ["_model", "_device"]
 
-    def __init__(
-        self, pth: float = 0.5, device: Union[torch.device, str] = "cuda"
-    ) -> None:
-        self._pth = pth
+    def __init__(self, device: Union[torch.device, str] = "cuda") -> None:
         self._device = torch.device(device) if isinstance(device, str) else device
-
-    @property
-    def pth(self) -> float:
-        return self._pth
 
     def __call__(self, img: np.ndarray) -> Any:
         raise NotImplementedError
@@ -24,15 +17,18 @@ class Segmentor(object):
     def _sigmoid(self, logits: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-logits))
 
+    @staticmethod
+    def threshold(probability: np.ndarray, pth: float = 0.5) -> np.ndarray:
+        return probability > pth
+
 
 class Sam2Segmentor(Segmentor):
     def __init__(
         self,
         model_id: str = "facebook/sam2-hiera-large",
-        pth: float = 0.5,
         device: Union[torch.device, str] = "cuda",
     ) -> None:
-        super().__init__(pth=pth, device=device)
+        super().__init__(device=device)
         self._model: SAM2ImagePredictor = SAM2ImagePredictor.from_pretrained(
             model_id, device=self._device
         )

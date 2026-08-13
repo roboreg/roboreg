@@ -27,6 +27,7 @@ def main(
         "facebook/sam2-hiera-large", help="Hugging Face model ID."
     ),
     device: str = typer.Option("cuda", help="Device to run the model. Default: cuda"),
+    pth: float = typer.Option(0.5, help="Probability threshold for the mask."),
     pre_annotated: bool = typer.Option(False, help="Try to read annotations."),
 ) -> None:
     r"""Generate robot masks with SAM2, seeded by annotated samples."""
@@ -57,7 +58,7 @@ def main(
         annotator.clear()
         points, labels = annotations_to_arrays(annotations)
         probability = segmentor(img, points, labels)
-        mask = np.where(probability > segmentor.pth, 255, 0).astype(np.uint8)
+        mask = np.where(segmentor.threshold(probability, pth), 255, 0).astype(np.uint8)
         overlay = overlay_mask(img, mask, mode="g", scale=1.0)
 
         # write probability and mask

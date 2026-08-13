@@ -25,7 +25,7 @@ def test_sam2_segmentor() -> None:
     # visualize
     cv2.imshow(
         "masked_img",
-        np.where(np.expand_dims(p > segmentor.pth, -1), img, 0),
+        np.where(np.expand_dims(segmentor.threshold(p), -1), img, 0),
     )
     cv2.imshow("probability", p)
     cv2.waitKey(0)
