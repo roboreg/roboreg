@@ -208,3 +208,51 @@ def load_robot_data_from_urdf_string(
         collision=collision,
         target_reduction=target_reduction,
     )
+
+
+def load_robot_data_from_ros_robot_description(
+    urdf: str,
+    root_link_name: str = "",
+    end_link_name: str = "",
+    collision: bool = False,
+    target_reduction: float = 0.0,
+) -> RobotData:
+    r"""Load data to construct a robot from a ROS robot_description URDF string (e.g. as
+    published by robot_state_publisher). Mesh paths in the URDF must use the package:// prefix,
+    resolved via ROS ament_index_python.
+
+    Args:
+        urdf (str): The URDF contents.
+        root_link_name (str): The root link name of the robot Defaults to the first link with a mesh.
+        end_link_name (str): The end link name of the robot Defaults to the last link with a mesh.
+        collision (bool): Whether to load collision meshes. Defaults to False.
+        target_reduction (float): Mesh simplification in [0, 1]. Defaults to 0.0 (no simplification).
+
+    Returns:
+        RobotData: Data for constructing a Robot.
+    """
+    urdf_parser = URDFParser(urdf=urdf)
+
+    root_link_name, end_link_name = _resolve_link_names(
+        urdf_parser=urdf_parser,
+        root_link_name=root_link_name,
+        end_link_name=end_link_name,
+        collision=collision,
+    )
+
+    # parse data from URDF, resolving package:// prefixes via the ROS registry
+    mesh_uris = urdf_parser.mesh_uris(
+        root_link_name=root_link_name,
+        end_link_name=end_link_name,
+        collision=collision,
+    )
+    mesh_paths = urdf_parser.resolve_ros_registry_uris(uris=mesh_uris)
+
+    return _build_robot_data(
+        urdf_parser=urdf_parser,
+        mesh_paths=mesh_paths,
+        root_link_name=root_link_name,
+        end_link_name=end_link_name,
+        collision=collision,
+        target_reduction=target_reduction,
+    )
