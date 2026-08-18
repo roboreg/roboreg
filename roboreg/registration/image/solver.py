@@ -153,7 +153,7 @@ class DiffRenderingRegistration:
             device=self._device,
         )
         # TODO: Standardize transform naming and direction conventions
-        # https://github.com/lbr-stack/roboreg/issues/137
+        # https://github.com/roboreg/roboreg/issues/137
         extrinsics_inv = torch.linalg.inv(extrinsics)
         return (
             pk.matrix44_to_se3_9d(extrinsics_inv).detach().clone().requires_grad_(True)

@@ -41,8 +41,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/lbr-stack/roboreg"
-Issues = "https://github.com/lbr-stack/roboreg/issues"
+Homepage = "https://roboreg.github.io"
+Issues = "https://github.com/roboreg/roboreg/issues"
 
 [project.scripts]
 rr-cam-swarm = "cli.rr_cam_swarm:app"
