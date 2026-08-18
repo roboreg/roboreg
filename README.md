@@ -1,7 +1,7 @@
 # roboreg
-[![Unit tests](https://github.com/lbr-stack/roboreg/actions/workflows/tests.yaml/badge.svg)](https://github.com/lbr-stack/roboreg/actions/workflows/tests.yaml)
+[![Unit tests](https://github.com/roboreg/roboreg/actions/workflows/tests.yaml/badge.svg)](https://github.com/roboreg/roboreg/actions/workflows/tests.yaml)
 [![PyPI version](https://img.shields.io/pypi/v/roboreg.svg)](https://pypi.org/project/roboreg/)
-[![License: Apache License 2.0](https://img.shields.io/github/license/lbr-stack/roboreg)](https://github.com/lbr-stack/roboreg?tab=Apache-2.0-1-ov-file)
+[![License: Apache License 2.0](https://img.shields.io/github/license/roboreg/roboreg)](https://github.com/roboreg/roboreg?tab=Apache-2.0-1-ov-file)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Eye-to-hand calibration from RGB-D images using robot mesh as calibration target.
@@ -14,8 +14,8 @@ Eye-to-hand calibration from RGB-D images using robot mesh as calibration target
             <th align="left" width="50%">Registered</th>
         </tr>
         <tr>
-            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/roboreg/refs/heads/main/doc/img/hydra_robust_icp_unregistered.png" alt="Unregistered Mesh and Point Cloud"></td>
-            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/roboreg/refs/heads/main/doc/img/hydra_robust_icp_registered.png" alt="Registered Mesh and Point Cloud"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/roboreg/roboreg/refs/heads/main/doc/img/hydra_robust_icp_unregistered.png" alt="Unregistered Mesh and Point Cloud"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/roboreg/roboreg/refs/heads/main/doc/img/hydra_robust_icp_registered.png" alt="Registered Mesh and Point Cloud"></td>
         </tr>
     </table>
 </body>
@@ -59,7 +59,7 @@ Next:
 1. Clone this repository
 
     ```shell
-    git clone git@github.com:lbr-stack/roboreg.git
+    git clone git@github.com:roboreg/roboreg.git
     ```
 
 2. Build the Docker image (currently only runtime support, i.e. no rendering via compiled kernels)
